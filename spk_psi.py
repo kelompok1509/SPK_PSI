@@ -20,7 +20,7 @@ st.markdown('''
     <div class="centered-text">
         <h2>
             Sistem Pendukung Keputusan 
-            Perekrutan Guru Bahasa Inggris Untuk Tingkat Sekolah Dasar 
+            Perekrutan Tutor Di Lembaga Bahasa dan Pendidikan Profesional (LBPP) Lia Medan 
             Menggunakan Metode <i> Preference Selection Index </i> (PSI)
         </h2>
     </div>
@@ -413,27 +413,27 @@ if alt_value > 1:
             st.write(df_totvarpref)
             
             #
-            # Nilai Dalam Preferensi
+            # Penyimpangan Dalam Nilai Preferensi
             #
             
-            # Mencari Nilai Dalam Preferensi
+            # Mencari Penyimpangan Dalam Nilai Preferensi
             Inpref = np.array(1 - totvarpref)
-            df_Inpref = pd.DataFrame(Inpref, columns=['Nilai Dalam Preferensi'], index=['Pendidikan', 'Pengalaman Kerja', 'Kemampuan Mengajar', 'Penguasaan Conversation', 'Penguasaan TOEFL', 'Usia'])
+            df_Inpref = pd.DataFrame(Inpref, columns=['Penyimpangan Dalam Nilai Preferensi'], index=['Pendidikan', 'Pengalaman Kerja', 'Kemampuan Mengajar', 'Penguasaan Conversation', 'Penguasaan TOEFL', 'Usia'])
             df_Inpref = df_Inpref.rename_axis('Kriteria', axis=0)
             
             st.markdown('''
                 <br>
                 <h3>
-                Matriks Nilai Dalam Preferensi :  
+                Matriks Penyimpangan Dalam Nilai Preferensi :  
                 </h3>
                 <br>''', 
             unsafe_allow_html=True)
             st.write(df_Inpref)
             
-            # Menghitung Total Nilai Dalam Preferensi
+            # Menghitung Total Penyimpangan Dalam Nilai Preferensi
             totinpref = np.sum(Inpref)
             totinpref_r4 = np.round(totinpref, decimals=4)
-            st.write(f'Total Nilai Dalam Preferensi: {totinpref_r4}')
+            st.write(f'Total Penyimpangan Dalam Nilai Preferensi: {totinpref_r4}')
             
             
             #
@@ -531,11 +531,9 @@ if alt_value > 1:
             selected_alt_names_only = alt_names_only
             selected_rank_values = ', '.join([f'{name} = {value}' for name, value in zip(alt_names, rank_values)])
 
-            st.write(f'''Berdasarkan perhitungan yang telah dilakukan, 
-                            maka dapat disimpulkan bahwa calon guru bahasa inggris untuk tingkat sekolah dasar 
-                            pada SD Ceria 1 adalah {selected_alt_names_only}. 
-                            Dengan masing-masing bernilai {selected_rank_values}.'''
+            st.write(f'''Dari perhitungan yang telah dilakukan dapat dilihat bahwa {selected_rank_values} memiliki nilai terbesar, 
+                        sehingga dapat disimpulkan bahwa {selected_alt_names_only} yang akan dipilih 
+                        sebagai tutor yang diterima di Lembaga Bahasa dan Pendidikan Profesional (LBPP) Lia Medan.'''
             )
             
             
-        
