@@ -20,7 +20,7 @@ st.markdown('''
     <div class="centered-text">
         <h2>
             Sistem Pendukung Keputusan 
-            Perekrutan Tutor Di Lembaga Bahasa dan Pendidikan Profesional (LBPP) Lia Medan 
+            Perekrutan Guru Bahasa Inggris Untuk Tingkat Sekolah Dasar 
             Menggunakan Metode <i> Preference Selection Index </i> (PSI)
         </h2>
     </div>
@@ -533,7 +533,7 @@ if alt_value > 1:
 
             st.write(f'''Dari perhitungan yang telah dilakukan dapat dilihat bahwa {selected_rank_values} memiliki nilai terbesar, 
                         sehingga dapat disimpulkan bahwa {selected_alt_names_only} yang akan dipilih 
-                        sebagai tutor yang diterima di Lembaga Bahasa dan Pendidikan Profesional (LBPP) Lia Medan.'''
+                        sebagai guru bahasa inggris untuk tingkat sekolah dasar yang diterima di Sekolah Dasar (SD) Ceria 1.'''
             )
             
             
