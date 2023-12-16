@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import plotly.express as px
+from fpdf import FPDF
 
 
 # Add a custom CSS style to center-align text
@@ -12,9 +14,62 @@ centered_text_style = """
     </style>
 """
 
+# Fungsi untuk membuat file PDF
+def create_pdf(df_rank_r4, df_result_array_sorted, selected_rank_values, selected_alt_names_only):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+
+    # Tambahkan bagian hasil perangkingan ke dalam file PDF
+    pdf.set_font("Arial", style='B', size=12)
+    pdf.multi_cell(0, 10, txt='''Hasil Perhitungan Dalam Perekrutan Guru Bahasa Inggris Untuk Tingkat Sekolah Dasar 
+        Menggunakan Metode Preference Selection Index (PSI)''', align='C')
+    pdf.ln(10)
+
+    # Display "Hasil Sebelum Diurutkan" DataFrame
+    pdf.cell(200, 10, txt="Hasil Sebelum Diurutkan:", ln=True, align='L')
+    pdf.ln(5)
+    for col in df_rank_r4.columns:
+        pdf.cell(40, 10, txt=col, border=1)
+    pdf.ln()
+    for index, row in df_rank_r4.iterrows():
+        for col in df_rank_r4.columns:
+            pdf.cell(40, 10, txt=str(row[col]), border=1)
+        pdf.ln()
+
+    pdf.ln(10)
+
+    # Display "Hasil Setelah Diurutkan" DataFrame
+    pdf.cell(200, 10, txt="Hasil Setelah Diurutkan:", ln=True, align='L')
+    pdf.ln(5)
+    for col in df_result_array_sorted.columns:
+        pdf.cell(40, 10, txt=col, border=1)
+    pdf.ln()
+    for index, row in df_result_array_sorted.iterrows():
+        for col in df_result_array_sorted.columns:
+            pdf.cell(40, 10, txt=str(row[col]), border=1)
+        pdf.ln()
+
+    pdf.ln(10)
+
+    # Display "Kesimpulan" text
+    pdf.cell(200, 10, txt="Kesimpulan:", ln=True, align='L')
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, txt=f'''Dari perhitungan yang telah dilakukan dapat dilihat bahwa {selected_rank_values} memiliki nilai terbesar, sehingga dapat disimpulkan bahwa {selected_alt_names_only} yang akan dipilih sebagai guru bahasa inggris untuk tingkat sekolah dasar yang diterima di Sekolah Dasar (SD) Ceria 1.''', align='J')
+    
+    pdf.ln(10)
+    pdf.cell(200, 10, txt="Dibuat Oleh : Kelompok 1 - IF PAGI B ", ln=True, align='C')
+    # Simpan file PDF
+    pdf_output = pdf.output(dest='S').encode('latin1')
+
+    return pdf_output
+    
+    
+    
 # Render the custom CSS style
 st.markdown(centered_text_style, unsafe_allow_html=True)
 
+# ---- MAINPAGE ----
 # Use st.header with the centered-text class
 st.markdown('''
     <div class="centered-text">
@@ -23,10 +78,90 @@ st.markdown('''
             Perekrutan Guru Bahasa Inggris Untuk Tingkat Sekolah Dasar 
             Menggunakan Metode <i> Preference Selection Index </i> (PSI)
         </h2>
+        <span>Kelompok 1 - IF PAGI B</span>
     </div>
-    <br>''', 
+    <hr style="height:5px;border-width:0;color:gray;background-color:gray">''', 
     unsafe_allow_html=True)
 
+
+st.title(":bar_chart: Dashboard Kriteria")
+st.markdown('''
+        <br>''', 
+    unsafe_allow_html=True)
+
+total_kriteria = 6
+total_kategori_benefit = 5
+total_kategori_cost = 1
+
+left_column, middle_column, right_column = st.columns(3)
+with left_column:
+    st.subheader("Total Kriteria:")
+    st.subheader(f"{total_kriteria:,}")
+with middle_column:
+    st.subheader("Total Kategori Benefit:")
+    st.subheader(f"{total_kategori_benefit}")
+with right_column:
+    st.subheader("Total Kategori Cost:")
+    st.subheader(f"{total_kategori_cost}")
+
+st.markdown('''
+        <hr style="height:5px;border-width:0;color:gray;background-color:gray">
+        <br>''', 
+    unsafe_allow_html=True)
+
+st.subheader("Kriteria:")
+
+kriteria_name = {
+    'C1': ['Pendidikan'], 
+    'C2': ['Pengalaman Kerja'],
+    'C3': ['Kemampuan Mengajar'],
+    'C4': ['Penguasaan Conversation'],
+    'C5': ['Penguasaan TOEFL'], 
+    'C6': ['Usia']
+}
+df_kategori_krit = pd.DataFrame(kriteria_name)
+st.markdown(df_kategori_krit.to_html(index=False), unsafe_allow_html=True)
+
+# Kriteria benefit dan cost
+data_ben = ['Pendidikan', 'Pengalaman Kerja', 'Kemampuan Mengajar', 'Penguasaan Conversation', 'Penguasaan TOEFL']
+data_cost = ['Usia']
+
+# Hitung persentase untuk setiap data benefit
+percentages_ben = [1 / len(data_ben)] * len(data_ben)
+
+# Membuat DataFrame untuk Plotly Express
+df_ben = pd.DataFrame({'Kategori': data_ben})
+
+# Membuat pie chart benefit menggunakan Plotly Express
+fig_ben = px.pie(df_ben, names='Kategori', title='Pie Chart - Kategori Benefit')
+fig_ben.update_traces(textinfo='label')  # Mengganti teks persentase dengan label
+fig_ben.update_layout(plot_bgcolor='rgba(0,0,0,0)', showlegend=False)  # Menghilangkan warna latar belakang
+
+# Hitung persentase untuk setiap data cost
+percentages_cost = [1 / len(data_cost)] * len(data_cost)
+
+# Membuat DataFrame untuk Plotly Express
+df_cost = pd.DataFrame({'Kategori': data_cost})
+
+# Membuat pie chart cost menggunakan Plotly Express
+fig_cost = px.pie(df_cost, names='Kategori', title='Pie Chart - Kategori Cost')
+fig_cost.update_traces(textinfo='label')  # Mengganti teks persentase dengan label
+fig_cost.update_layout(plot_bgcolor='rgba(0,0,0,0)', showlegend=False)  # Menghilangkan warna latar belakang
+
+# Membagi posisi chart
+left_column, right_column = st.columns(2)
+
+# Menampilkan chart pada masing-masing kolom
+left_column.plotly_chart(fig_ben, use_container_width=True)
+right_column.plotly_chart(fig_cost, use_container_width=True)
+
+st.markdown('''
+        <hr style="height:5px;border-width:0;color:gray;background-color:gray">
+        <br>''', 
+    unsafe_allow_html=True)
+
+st.title(":pencil: Form Input Data")
+# ---- Input Page ----
 st.markdown('''
     :red[*Note :] Minimal jumlah alternatif adalah sebanyak <u><b>2 (DUA)</b></u>
     untuk mendapatkan hasil sebagai pendukung keputusan.''', unsafe_allow_html=True)
@@ -210,7 +345,24 @@ if alt_value > 1:
                 alt_usia = np.append(alt_usia, c6)
 
 
+
+        if "button1" not in st.session_state:
+            st.session_state["button1"] = False
+
+        if "button2" not in st.session_state:
+            st.session_state["button2"] = False
+            
+            
         if st.button("Hitung Nilai", type="primary"):
+            st.session_state["button1"] = not st.session_state["button1"]
+        
+        
+        if st.session_state["button1"]:
+            st.markdown('''
+                <hr style="height:5px;border-width:0;color:gray;background-color:gray">
+                <br>''', 
+            unsafe_allow_html=True)
+            st.title(":1234: Perhitungan")
             
             # The output for each value from user input :
             st.markdown('''
@@ -455,6 +607,17 @@ if alt_value > 1:
             unsafe_allow_html=True)
             st.write(df_bobot_kriteria)
             
+            # Membuat bar chart dengan Plotly Express
+            fig_bobot_kriteria = px.bar(
+                df_bobot_kriteria,
+                x=df_bobot_kriteria.index,
+                y='Nilai Bobot',
+                title='Bar Chart - Bobot Kriteria',
+                color_discrete_sequence=["#0083B8"] * len(df_bobot_kriteria),  # Atur skala warna sesuai keinginan
+            )
+
+            # Menampilkan bar chart
+            st.plotly_chart(fig_bobot_kriteria, use_container_width=True)
             
             #============================================= Menghitung Nilai Preference Selection Index =========================================
             st.markdown('''
@@ -535,5 +698,21 @@ if alt_value > 1:
                         sehingga dapat disimpulkan bahwa {selected_alt_names_only} yang akan dipilih 
                         sebagai guru bahasa inggris untuk tingkat sekolah dasar yang diterima di Sekolah Dasar (SD) Ceria 1.'''
             )
+        
+            st.markdown('''
+                <hr style="height:5px;border-width:0;color:gray;background-color:gray">
+                <br>''', 
+            unsafe_allow_html=True)
+            st.title(":printer: Cetak Hasil")
+            
+            # Call your function and get the PDF output
+            pdf_output = create_pdf(df_rank_r4, df_result_array_sorted, selected_rank_values, selected_alt_names_only)
+
+            # Tambahkan tombol "Cetak Hasil"
+            if st.button("Cetak Hasil"):
+                st.session_state["button2"] = not st.session_state["button2"]
+                
+                # Download button for the PDF
+                st.download_button("Download Hasil Perangkingan PDF", pdf_output, file_name="hasil_perhitungan.pdf", key="download_button")
             
             
